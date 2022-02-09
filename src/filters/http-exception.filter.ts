@@ -12,8 +12,7 @@ import {
     constructor(
         private readonly httpAdapterHost: HttpAdapterHost) {}
   
-    catch(exception: unknown, host: ArgumentsHost): void {
-        console.log(exception)
+    catch(exception: any, host: ArgumentsHost): void {
       // In certain situations `httpAdapter` might not be available in the
       // constructor method, thus we should resolve it here.
       const { httpAdapter } = this.httpAdapterHost;
@@ -23,10 +22,11 @@ import {
       const httpStatus =
         exception instanceof HttpException
           ? exception.getStatus()
-          : HttpStatus.INTERNAL_SERVER_ERROR;
+          : exception.status;
   
       const responseBody = {
         statusCode: httpStatus,
+        message: exception.message,
         timestamp: new Date().toISOString(),
         path: httpAdapter.getRequestUrl(ctx.getRequest()),
       };
